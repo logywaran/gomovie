@@ -1,9 +1,6 @@
 package com.gomovie.seat;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record SeatRequest(
 
@@ -15,9 +12,8 @@ public record SeatRequest(
         @Max(value = 999, message = "Seat number must not exceed 999")
         Integer seatNumber,
 
-        @NotBlank(message = "Seat type is required")
-        @Size(max = 50, message = "Seat type must not exceed 50 characters")
-        String seatType
+        @NotNull(message = "Seat type is required")
+        SeatType seatType
 
 ) {
 }

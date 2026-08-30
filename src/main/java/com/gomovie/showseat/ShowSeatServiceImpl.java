@@ -73,7 +73,7 @@ public class ShowSeatServiceImpl implements ShowSeatService {
                             );
 
                             showSeat.setPrice(
-                                    BigDecimal.ZERO
+                                    BigDecimal.valueOf(200)
                             );
 
                             return showSeat;

@@ -1,5 +1,7 @@
 package com.gomovie.showseat;
 
+import com.gomovie.seat.SeatType;
+
 import java.math.BigDecimal;
 
 public record ShowSeatResponse(
@@ -16,7 +18,7 @@ public record ShowSeatResponse(
 
         Integer seatNumber,
 
-        String seatType,
+        SeatType seatType,
 
         ShowSeatStatus status,
 

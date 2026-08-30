@@ -1,5 +1,7 @@
 package com.gomovie.bookingseat;
 
+import com.gomovie.seat.SeatType;
+
 import java.math.BigDecimal;
 
 public record BookingSeatResponse(
@@ -10,7 +12,7 @@ public record BookingSeatResponse(
 
         Integer seatNumber,
 
-        String seatType,
+        SeatType seatType,
 
         BigDecimal price
 

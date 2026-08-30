@@ -5,7 +5,7 @@ public record SeatResponse(
         Long screenId,
         String rowLabel,
         Integer seatNumber,
-        String seatType,
+        SeatType seatType,
         Boolean isActive
 ) {
 }

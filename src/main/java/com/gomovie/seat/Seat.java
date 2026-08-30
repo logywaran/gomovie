@@ -52,8 +52,9 @@ public class Seat extends BaseEntity {
     @Column(name = "seat_number", nullable = false)
     private Integer seatNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "seat_type", nullable = false, length = 50)
-    private String seatType;
+    private SeatType seatType;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
