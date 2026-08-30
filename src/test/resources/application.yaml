@@ -1,0 +1,17 @@
+# Database
+spring:
+  datasource:
+    url: jdbc:h2:mem:gomovie-test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+# JWT
+jwt:
+  secret: test-secret-key-for-gomovie-jwt-testing-only-2026
+  expiration: 900000

@@ -1,14 +1,33 @@
+# Application
 spring:
   application:
     name: gomovie
 
+  # Database
   datasource:
     url: jdbc:mysql://localhost:3306/gomovie
     username: root
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  # JPA/Hibernate
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: false
+
+# Server
+server:
+  port: 8090
+
+# JWT
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 900000
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.gomovie: TRACE
+
