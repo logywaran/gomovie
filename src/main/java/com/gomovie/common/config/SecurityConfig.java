@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,57 +35,86 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // ==========================
+                        // Authentication
+                        // ==========================
                         .requestMatchers(
                                 "/api/users/register",
-                                "/api/users/login",
-                                "/api/movies/**",
-                                "/api/shows/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/error"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/cities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/cities/**").permitAll()
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/cities"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/theatres/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/theatres/*/screens")
-                        .hasAnyRole("THEATRE_MANAGER", "ADMIN")
+                                "/api/users/login"
+                        )
+                        .permitAll()
+
+                        // ==========================
+                        // Public APIs
+                        // ==========================
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/screens/**"
-                        ).permitAll()
+                                "/api/cities",
+                                "/api/cities/**",
+                                "/api/movies/**",
+                                "/api/shows/**",
+                                "/api/theatres/**",
+                                "/api/screens/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        )
+                        .permitAll()
+
+                        // ==========================
+                        // Theatre Management
+                        // ==========================
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/theatres/*/screens"
+                        )
+                        .hasRole("THEATRE_MANAGER")
+
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/screens/*/seats"
-                        ).hasAnyRole("THEATRE_MANAGER", "ADMIN")
+                        )
+                        .hasRole("THEATRE_MANAGER")
 
+                        // ==========================
+                        // Admin APIs
+                        // ==========================
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/cities"
+                        )
+                        .hasRole("ADMIN")
 
-                        .anyRequest().authenticated()
+                        // ==========================
+                        // Customer APIs
+                        // ==========================
+                        .requestMatchers(
+                                "/api/bookings/**"
+                        )
+                        .hasRole("CUSTOMER")
+
+                        // ==========================
+                        // Everything else
+                        // ==========================
+                        .anyRequest()
+                        .authenticated()
                 )
 
                 .exceptionHandling(exception -> exception
+
                         .authenticationEntryPoint(
                                 jwtAuthenticationEntryPoint
                         )
+
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
 
                             log.warn(
-                                    "Access denied for {} {}. User={}, Authorities={}, Reason={}",
+                                    "Access denied for {} {}. User={}",
                                     request.getMethod(),
                                     request.getRequestURI(),
                                     request.getUserPrincipal() != null
                                             ? request.getUserPrincipal().getName()
-                                            : "anonymous",
-                                    SecurityContextHolder.getContext()
-                                            .getAuthentication() != null
-                                            ? SecurityContextHolder.getContext()
-                                              .getAuthentication()
-                                              .getAuthorities()
-                                            : "none",
-                                    accessDeniedException.getMessage()
+                                            : "anonymous"
                             );
 
                             response.sendError(

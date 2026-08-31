@@ -11,4 +11,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Optional<Ticket> findByQrToken(String qrToken);
 
     boolean existsByBookingSeatId(Long bookingSeatId);
+
+    Optional<Ticket> findByBookingSeatId(Long bookingSeatId);
 }
