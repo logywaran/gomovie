@@ -17,4 +17,6 @@ public interface BookingRepository
             BookingStatus status,
             LocalDateTime time
     );
+
+    List<Booking> findByUserId(Long userId);
 }

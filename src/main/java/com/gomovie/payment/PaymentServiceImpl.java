@@ -5,8 +5,10 @@ import com.gomovie.booking.BookingRepository;
 import com.gomovie.booking.BookingStatus;
 import com.gomovie.common.exception.ResourceAlreadyExistsException;
 import com.gomovie.common.exception.ResourceNotFoundException;
+import com.gomovie.notification.EmailService;
 import com.gomovie.payment.provider.PaymentInitiationResult;
 import com.gomovie.payment.provider.PaymentProvider;
+import com.gomovie.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentProvider paymentProvider;
     private final BookingSeatRepository bookingSeatRepository;
     private final ShowSeatRepository showSeatRepository;
+    private final TicketService ticketService;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -178,6 +182,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         bookingRepository.save(booking);
         paymentRepository.save(payment);
+
+        ticketService.generateTickets(booking.getId());
+
+        emailService.sendBookingConfirmation(booking.getId());
 
         log.info(
                 "Payment successful. bookingId={}, transactionId={}",

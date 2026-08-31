@@ -12,6 +12,7 @@ import com.gomovie.showseat.ShowSeatStatus;
 import com.gomovie.user.User;
 import com.gomovie.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,18 +55,17 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
-        /*
-         * The authenticated user will be obtained from
-         * Spring Security once authentication is connected.
-         *
-         * For now, this part will be completed when the
-         * authentication flow is integrated.
-         */
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
         User user =
-                userRepository.findById(1L)
+                userRepository.findByEmail(email)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
-                                        "User not found"
+                                        "Authenticated user not found"
                                 )
                         );
 
@@ -207,12 +207,36 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings() {
 
-        /*
-         * This will be implemented using the authenticated
-         * user's ID once Spring Security authentication
-         * is connected to the booking module.
-         */
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
 
-        return List.of();
+        User user =
+                userRepository.findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Authenticated user not found"
+                                )
+                        );
+
+        List<Booking> bookings =
+                bookingRepository.findByUserId(user.getId());
+
+        return bookings.stream()
+                .map(booking -> {
+
+                    List<BookingSeat> bookingSeats =
+                            bookingSeatRepository.findByBookingId(
+                                    booking.getId()
+                            );
+
+                    return bookingMapper.toResponse(
+                            booking,
+                            bookingSeats
+                    );
+                })
+                .toList();
     }
 }
