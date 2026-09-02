@@ -12,6 +12,7 @@ public class PaymentMapper {
                 payment.getBooking().getId(),
                 payment.getTransactionId(),
                 payment.getPaymentUrl(),
+                null,
                 payment.getAmount(),
                 payment.getStatus(),
                 payment.getPaymentMethod(),

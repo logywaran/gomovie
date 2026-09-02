@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass//tells JPA how to treat that inherited superclass
+@EntityListeners(AuditingEntityListener.class)//automatically updates these auditing fields //createdAt / updatedAt won't automatically get populated
 public abstract class BaseEntity {
 
     @CreatedDate

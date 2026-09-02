@@ -18,7 +18,8 @@ public class MockFpxPaymentProvider implements PaymentProvider {
 
         return new PaymentInitiationResult(
                 transactionId,
-                "/api/mock-fpx/" + transactionId
+                "/api/mock-fpx/" + transactionId,
+                null
         );
     }
 

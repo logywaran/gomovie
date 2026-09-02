@@ -18,3 +18,19 @@ spring:
 jwt:
   secret: test-secret-key-for-gomovie-jwt-testing-only-2026
   expiration: 900000
+
+mobi:
+  fpx:
+    initiate-deposit-url: http://localhost/test/deposit
+    available-banks-url: http://localhost/test/banks
+    status-check-url: http://localhost/test/status
+
+    mid: TEST_MID
+    tid: TEST_TID
+    sub-mid: TEST_SUB_MID
+    merchant-name: TEST_MERCHANT
+
+    moto-api-key: TEST_API_KEY
+    login-id: TEST_LOGIN_ID
+
+    redirect-url: http://localhost:8090/api/payments/mobi/redirect

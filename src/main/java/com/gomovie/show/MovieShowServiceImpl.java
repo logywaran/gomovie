@@ -6,6 +6,7 @@ import com.gomovie.movie.Movie;
 import com.gomovie.movie.MovieRepository;
 import com.gomovie.screen.Screen;
 import com.gomovie.screen.ScreenRepository;
+import com.gomovie.showseat.ShowSeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class MovieShowServiceImpl implements MovieShowService {
     private final MovieRepository movieRepository;
     private final ScreenRepository screenRepository;
     private final MovieShowMapper movieShowMapper;
+    private final ShowSeatService showSeatService;
 
     @Override
     @Transactional
@@ -79,6 +81,10 @@ public class MovieShowServiceImpl implements MovieShowService {
 
         MovieShow savedMovieShow =
                 movieShowRepository.save(movieShow);
+
+        showSeatService.generateShowSeats(
+                savedMovieShow.getId()
+        );
 
         return movieShowMapper.toResponse(savedMovieShow);
     }

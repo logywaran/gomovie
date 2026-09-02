@@ -5,6 +5,9 @@ import com.gomovie.booking.BookingRepository;
 import com.gomovie.bookingseat.BookingSeat;
 import com.gomovie.bookingseat.BookingSeatRepository;
 import com.gomovie.common.exception.ResourceNotFoundException;
+import com.gomovie.seat.Seat;
+import com.gomovie.show.MovieShow;
+import com.gomovie.showseat.ShowSeat;
 import com.gomovie.ticket.Ticket;
 import com.gomovie.ticket.TicketRepository;
 import com.gomovie.user.User;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,6 +33,7 @@ public class EmailServiceImpl implements EmailService {
     private String mailUsername;
 
     @Override
+    @Transactional(readOnly = true)
     public void sendBookingConfirmation(Long bookingId) {
 
         Booking booking =
@@ -40,6 +45,13 @@ public class EmailServiceImpl implements EmailService {
                         );
 
         User user = booking.getUser();
+        MovieShow show = booking.getShow();
+
+        String movieTitle = show.getMovie().getTitle();
+        String screenName = show.getScreen().getName();
+        String theatreName = show.getScreen().getTheatre().getName();
+        String theatreAddress = show.getScreen().getTheatre().getAddress();
+        String cityName = show.getScreen().getTheatre().getCity().getName();
 
         List<BookingSeat> bookingSeats =
                 bookingSeatRepository.findByBookingId(bookingId);
@@ -58,9 +70,22 @@ public class EmailServiceImpl implements EmailService {
                                     )
                             );
 
+            ShowSeat showSeat = bookingSeat.getShowSeat();
+            Seat seat = showSeat.getSeat();
+
             ticketDetails
                     .append("Ticket Number: ")
                     .append(ticket.getTicketNumber())
+                    .append("\n")
+                    .append("Seat: ")
+                    .append(seat.getRowLabel())
+                    .append(seat.getSeatNumber())
+                    .append("\n")
+                    .append("Seat Type: ")
+                    .append(seat.getSeatType())
+                    .append("\n")
+                    .append("Price: RM ")
+                    .append(bookingSeat.getPrice())
                     .append("\n")
                     .append("QR Token: ")
                     .append(ticket.getQrToken())
@@ -70,7 +95,6 @@ public class EmailServiceImpl implements EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom(mailUsername);
-
         message.setTo(user.getEmail());
 
         message.setSubject(
@@ -84,13 +108,36 @@ public class EmailServiceImpl implements EmailService {
 
                 Your GoMovie booking has been confirmed successfully!
 
+                BOOKING DETAILS
+                ----------------
                 Booking Reference: %s
-                Show ID: %s
-                Total Amount: RM %s
 
-                Ticket Details:
+                MOVIE
+                ----------------
+                Movie: %s
 
+                THEATRE
+                ----------------
+                Theatre: %s
+                Address: %s
+                City: %s
+
+                SCREEN
+                ----------------
+                Screen: %s
+
+                SHOW
+                ----------------
+                Date: %s
+                Time: %s - %s
+
+                SEAT DETAILS
+                ----------------
                 %s
+                PAYMENT
+                ----------------
+                Payment Method: FPX
+                Total Amount: RM %s
 
                 Thank you for booking with GoMovie.
 
@@ -99,9 +146,16 @@ public class EmailServiceImpl implements EmailService {
                 """.formatted(
                         user.getName(),
                         booking.getBookingReference(),
-                        booking.getShowId(),
-                        booking.getTotalAmount(),
-                        ticketDetails
+                        movieTitle,
+                        theatreName,
+                        theatreAddress,
+                        cityName,
+                        screenName,
+                        show.getShowDate(),
+                        show.getStartTime(),
+                        show.getEndTime(),
+                        ticketDetails,
+                        booking.getTotalAmount()
                 )
         );
 

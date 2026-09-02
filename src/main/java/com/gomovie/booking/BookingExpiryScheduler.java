@@ -49,11 +49,37 @@ public class BookingExpiryScheduler {
                                 bookingSeat.getShowSeatId()
                         ).orElse(null);
 
-                if (showSeat != null
-                        && showSeat.getStatus() == ShowSeatStatus.HELD) {
+                if (showSeat == null) {
+
+                    log.warn(
+                            "ShowSeat not found while expiring booking. " +
+                                    "bookingId={}, showSeatId={}",
+                            booking.getId(),
+                            bookingSeat.getShowSeatId()
+                    );
+
+                } else if (showSeat.getStatus() == ShowSeatStatus.HELD) {
+
+                    log.info(
+                            "Releasing expired ShowSeat. " +
+                                    "bookingId={}, showSeatId={}, status={}",
+                            booking.getId(),
+                            showSeat.getId(),
+                            showSeat.getStatus()
+                    );
 
                     showSeat.setStatus(
                             ShowSeatStatus.AVAILABLE
+                    );
+
+                } else {
+
+                    log.warn(
+                            "ShowSeat is not HELD while expiring booking. " +
+                                    "bookingId={}, showSeatId={}, status={}",
+                            booking.getId(),
+                            showSeat.getId(),
+                            showSeat.getStatus()
                     );
                 }
             }

@@ -3,28 +3,27 @@ package com.gomovie.payment;
 import com.gomovie.booking.Booking;
 import com.gomovie.booking.BookingRepository;
 import com.gomovie.booking.BookingStatus;
+import com.gomovie.bookingseat.BookingSeat;
+import com.gomovie.bookingseat.BookingSeatRepository;
 import com.gomovie.common.exception.ResourceAlreadyExistsException;
 import com.gomovie.common.exception.ResourceNotFoundException;
 import com.gomovie.notification.EmailService;
 import com.gomovie.payment.provider.PaymentInitiationResult;
 import com.gomovie.payment.provider.PaymentProvider;
-import com.gomovie.ticket.TicketService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.gomovie.bookingseat.BookingSeat;
-import com.gomovie.bookingseat.BookingSeatRepository;
 import com.gomovie.showseat.ShowSeat;
 import com.gomovie.showseat.ShowSeatRepository;
 import com.gomovie.showseat.ShowSeatStatus;
+import com.gomovie.ticket.TicketService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
@@ -36,6 +35,27 @@ public class PaymentServiceImpl implements PaymentService {
     private final ShowSeatRepository showSeatRepository;
     private final TicketService ticketService;
     private final EmailService emailService;
+
+    public PaymentServiceImpl(
+            PaymentRepository paymentRepository,
+            BookingRepository bookingRepository,
+            PaymentMapper paymentMapper,
+            @Qualifier("mobiFpxPaymentProvider")
+            PaymentProvider paymentProvider,
+            BookingSeatRepository bookingSeatRepository,
+            ShowSeatRepository showSeatRepository,
+            TicketService ticketService,
+            EmailService emailService
+    ) {
+        this.paymentRepository = paymentRepository;
+        this.bookingRepository = bookingRepository;
+        this.paymentMapper = paymentMapper;
+        this.paymentProvider = paymentProvider;
+        this.bookingSeatRepository = bookingSeatRepository;
+        this.showSeatRepository = showSeatRepository;
+        this.ticketService = ticketService;
+        this.emailService = emailService;
+    }
 
     @Override
     @Transactional
@@ -109,13 +129,14 @@ public class PaymentServiceImpl implements PaymentService {
                 request.paymentMethod()
         );
 
-        payment.setProvider("MOCK_FPX");
+        payment.setProvider("MOBI_FPX");
 
         PaymentInitiationResult result =
                 paymentProvider.initiatePayment(
                         payment.getTransactionId(),
                         payment.getAmount()
                 );
+
         payment.setPaymentUrl(result.paymentUrl());
 
         Payment savedPayment =
@@ -128,7 +149,22 @@ public class PaymentServiceImpl implements PaymentService {
                 amount
         );
 
-        return paymentMapper.toResponse(savedPayment);
+        PaymentResponse response =
+                paymentMapper.toResponse(savedPayment);
+
+        return new PaymentResponse(
+                response.id(),
+                response.bookingId(),
+                response.transactionId(),
+                response.paymentUrl(),
+                result.redirectHtml(),
+                response.amount(),
+                response.status(),
+                response.paymentMethod(),
+                response.provider(),
+                response.failureReason(),
+                response.createdAt()
+        );
     }
 
     @Transactional
@@ -149,6 +185,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.SUCCESS);
 
         Booking booking = payment.getBooking();
+
         List<BookingSeat> bookingSeats =
                 bookingSeatRepository.findByBookingId(
                         booking.getId()
@@ -177,7 +214,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         booking.setStatus(BookingStatus.CONFIRMED);
-
         booking.setHoldExpiresAt(null);
 
         bookingRepository.save(booking);

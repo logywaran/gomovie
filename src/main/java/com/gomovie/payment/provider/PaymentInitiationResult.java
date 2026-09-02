@@ -4,7 +4,9 @@ public record PaymentInitiationResult(
 
         String providerTransactionId,
 
-        String paymentUrl
+        String paymentUrl,
+
+        String redirectHtml
 
 ) {
 }

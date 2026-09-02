@@ -93,6 +93,15 @@ public class SecurityConfig {
                         )
                         .hasRole("CUSTOMER")
 
+                                // ==========================
+                                // Mobi Payment APIs
+                                // ==========================
+                                .requestMatchers(
+                                        "/api/payments/mobi/deposit",
+                                        "/api/payments/mobi/redirect"
+                                )
+                                .permitAll()
+
                         // ==========================
                         // Everything else
                         // ==========================

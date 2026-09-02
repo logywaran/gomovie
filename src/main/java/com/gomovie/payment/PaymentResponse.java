@@ -13,6 +13,8 @@ public record PaymentResponse(
 
         String paymentUrl,
 
+        String redirectHtml,
+
         BigDecimal amount,
 
         PaymentStatus status,

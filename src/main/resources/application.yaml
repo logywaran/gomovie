@@ -43,3 +43,19 @@ logging:
   level:
     root: INFO
     com.gomovie: TRACE
+
+mobi:
+  fpx:
+    initiate-deposit-url: ${MOBI_INITIATE_DEPOSIT_URL}
+    available-banks-url: ${MOBI_AVAILABLE_BANKS_URL}
+    status-check-url: ${MOBI_STATUS_CHECK_URL}
+
+    mid: ${MOBI_MID}
+    tid: ${MOBI_TID}
+    sub-mid: ${MOBI_SUB_MID}
+    merchant-name: ${MOBI_MERCHANT_NAME}
+
+    moto-api-key: ${MOBI_MOTO_API_KEY}
+    login-id: ${MOBI_LOGIN_ID}
+
+    redirect-url: ${MOBI_REDIRECT_URL}
