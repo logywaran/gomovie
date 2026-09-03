@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
         name = "theatre",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_theatre_city_name",
-                columnNames = {"city_id", "name"}
+                columnNames = {"city_id", "name"}// Coimbatore+Inox✅ Chennai+Inox✅
         )
 )
 @Getter

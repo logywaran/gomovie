@@ -14,12 +14,12 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MobiRedirectService {
+public class    MobiRedirectService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
 
-    public void processRedirect(Map<String, String> params) {
+    public MobiRedirectResult processRedirect(Map<String, String> params) {
 
         String mobiSellerOrderNo =
                 params.get("fpx_sellerOrderNo");
@@ -130,24 +130,19 @@ public class MobiRedirectService {
                     fpxTransactionId
             );
 
-            paymentService.handlePaymentSuccess(
-                    transactionId
-            );
+            paymentService.handlePaymentSuccess(transactionId);
 
-            return;
+            return MobiRedirectResult.SUCCESS;
         }
 
         log.warn(
-                "Mobi payment failed. transactionId={}, " +
-                        "debitAuthCode={}, reason={}",
-                transactionId,
-                debitAuthCode,
-                debitAuthCodeString
-        );
-
-        paymentService.handlePaymentFailure(
+                "Mobi payment failed. transactionId={}",
                 transactionId
         );
+
+        paymentService.handlePaymentFailure(transactionId);
+
+        return MobiRedirectResult.FAILURE;
     }
 
     private Payment findPaymentByMobiSellerOrderNo(

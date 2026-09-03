@@ -24,6 +24,8 @@ public class TheatreServiceImpl implements TheatreService {
 
         City city = cityRepository.findById(request.cityId())
                 .orElseThrow(() -> {
+
+                    // The theatre cannot exist without a valid city.
                     log.warn(
                             "Cannot create theatre '{}'. City not found. cityId={}",
                             request.name(),
@@ -59,6 +61,9 @@ public class TheatreServiceImpl implements TheatreService {
         }
 
         Theatre theatre = theatreMapper.toEntity(request);
+
+        // The mapper only handles DTO-to-entity field mapping.
+        // The service resolves the city relationship using the actual City entity.
         theatre.setCity(city);
 
         Theatre savedTheatre = theatreRepository.save(theatre);
@@ -77,12 +82,12 @@ public class TheatreServiceImpl implements TheatreService {
     @Override
     public List<TheatreResponse> getByCity(Long cityId) {
 
-        log.info("Fetching active theatres for cityId={}", cityId);
+        log.debug("Fetching active theatres for cityId={}", cityId);
 
         List<Theatre> theatres =
                 theatreRepository.findByCityIdAndIsActiveTrue(cityId);
 
-        log.info(
+        log.debug(
                 "Found {} active theatres for cityId={}",
                 theatres.size(),
                 cityId
@@ -96,10 +101,11 @@ public class TheatreServiceImpl implements TheatreService {
     @Override
     public TheatreResponse getById(Long theatreId) {
 
-        log.info("Fetching theatre. theatreId={}", theatreId);
+        log.debug("Fetching theatre. theatreId={}", theatreId);
 
         Theatre theatre = theatreRepository.findById(theatreId)
                 .orElseThrow(() -> {
+
                     log.warn(
                             "Theatre not found. theatreId={}",
                             theatreId
@@ -110,6 +116,7 @@ public class TheatreServiceImpl implements TheatreService {
                     );
                 });
 
+        // Inactive theatres should not be exposed through customer-facing APIs.
         if (!Boolean.TRUE.equals(theatre.getIsActive())) {
 
             log.warn(
@@ -122,7 +129,7 @@ public class TheatreServiceImpl implements TheatreService {
             );
         }
 
-        log.info(
+        log.debug(
                 "Theatre found. theatreId={}, name='{}', city='{}'",
                 theatre.getId(),
                 theatre.getName(),
@@ -141,6 +148,7 @@ public class TheatreServiceImpl implements TheatreService {
 
         Theatre theatre = theatreRepository.findById(theatreId)
                 .orElseThrow(() -> {
+
                     log.warn(
                             "Cannot update theatre. Theatre not found. theatreId={}",
                             theatreId
@@ -151,6 +159,7 @@ public class TheatreServiceImpl implements TheatreService {
                     );
                 });
 
+        // Prevent modifications to theatres that are no longer active.
         if (!Boolean.TRUE.equals(theatre.getIsActive())) {
 
             log.warn(
@@ -166,6 +175,8 @@ public class TheatreServiceImpl implements TheatreService {
         if (request.name() != null
                 && !request.name().equals(theatre.getName())) {
 
+            // The database also has a unique constraint on city + theatre name.
+            // This check provides a meaningful business-level error before saving.
             if (theatreRepository.existsByCityIdAndNameAndIdNot(
                     theatre.getCity().getId(),
                     request.name(),
@@ -215,6 +226,4 @@ public class TheatreServiceImpl implements TheatreService {
 
         return theatreMapper.toResponse(updatedTheatre);
     }
-
-
 }

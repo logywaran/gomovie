@@ -102,11 +102,21 @@ public class SecurityConfig {
                                 )
                                 .permitAll()
 
-                        // ==========================
-                        // Everything else
-                        // ==========================
-                        .anyRequest()
-                        .authenticated()
+                                // ==========================
+                                // Public Payment Pages
+                                // ==========================
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/payment-success.html",
+                                        "/payment-failure.html"
+                                )
+                                .permitAll()
+
+                                // ==========================
+                                // Everything else
+                                // ==========================
+                                .anyRequest()
+                                .authenticated()
                 )
 
                 .exceptionHandling(exception -> exception

@@ -25,6 +25,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class MovieShow {
 
+    //Movie + screen + data + time = MovieShow
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -21,7 +21,12 @@ public class CityServiceImpl implements CityService {
         log.info("Creating city with name: {}", request.name());
 
         if (cityRepository.existsByName(request.name())) {
-            throw new ResourceAlreadyExistsException("City already exists with name: " + request.name());
+
+            log.warn("City already exists with name: {}", request.name());
+
+            throw new ResourceAlreadyExistsException(
+                    "City already exists with name: " + request.name()
+            );
         }
 
         City city = new City();
@@ -29,47 +34,50 @@ public class CityServiceImpl implements CityService {
 
         cityRepository.save(city);
 
-        log.info("City '{}' created successfully with id: {}", city.getName(), city.getId());
+        log.info(
+                "City '{}' created successfully with id: {}",
+                city.getName(),
+                city.getId()
+        );
 
-        return new CityResponse(city.getId(), city.getName());
+        return new CityResponse(
+                city.getId(),
+                city.getName()
+        );
     }
 
     @Override
     public CityResponse getById(Long id) {
 
-        log.info("Fetching city with id: {}", id);
+        log.debug("Fetching city with id: {}", id);
 
-        City city = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + id));
+        City city = cityRepository.findById(id)
+                .orElseThrow(() -> {
 
-        return new CityResponse(city.getId(), city.getName());
+                    log.warn("City not found with id: {}", id);
+
+                    return new ResourceNotFoundException(
+                            "City not found with id: " + id
+                    );
+                });
+
+        return new CityResponse(
+                city.getId(),
+                city.getName()
+        );
     }
 
     @Override
     public List<CityResponse> getAll() {
 
-        log.info("Fetching all active cities");
+        log.debug("Fetching all active cities");
 
         return cityRepository.findByIsActiveTrue()
                 .stream()
                 .map(city -> new CityResponse(
-                        city.getId()
-                        , city.getName()
+                        city.getId(),
+                        city.getName()
                 ))
                 .toList();
     }
-
-//    @Override
-//    public List<CityResponse> getAll() {
-//
-//        log.info("Fetching all active cities");
-//
-//        return cityRepository.findAll()
-//                .stream()
-//                .filter(city -> Boolean.TRUE.equals(city.getIsActive()))
-//                .map(city -> new CityResponse(
-//                        city.getId(),
-//                        city.getName()
-//                ))
-//                .toList();
-//    }
 }

@@ -40,4 +40,6 @@ public class CityController {
 
         return ResponseEntity.ok(cityService.getAll());
     }
+
+    // Need to add Deactivate/ReActivate Cities...
 }

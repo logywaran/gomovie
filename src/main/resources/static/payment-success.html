@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful | GoMovie</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Helvetica, Arial, sans-serif;
+            background: #f7f8fa;
+            color: #202124;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            padding: 52px 42px 44px;
+            text-align: center;
+            background: #ffffff;
+            border: 1px solid #e9eaed;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+            animation: cardEntry 0.6s ease-out;
+        }
+
+        .brand {
+            margin-bottom: 42px;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #202124;
+        }
+
+        .brand span {
+            color: #e63946;
+        }
+
+        .icon-wrapper {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 28px;
+            border-radius: 50%;
+            background: #edf9f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: iconEntry 0.6s 0.15s both;
+        }
+
+        .check {
+            width: 34px;
+            height: 19px;
+            border-left: 4px solid #28a765;
+            border-bottom: 4px solid #28a765;
+            transform: rotate(-45deg) scale(0);
+            animation: drawCheck 0.45s 0.65s ease-out forwards;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: 29px;
+            font-weight: 650;
+            letter-spacing: -0.6px;
+            color: #202124;
+            animation: fadeUp 0.5s 0.35s both;
+        }
+
+        .message {
+            max-width: 340px;
+            margin: 0 auto 28px;
+            color: #70757d;
+            font-size: 15px;
+            line-height: 1.65;
+            animation: fadeUp 0.5s 0.45s both;
+        }
+
+        .confirmation {
+            margin-bottom: 30px;
+            padding: 15px 18px;
+            border: 1px solid #e4f1e9;
+            border-radius: 12px;
+            background: #f7fcf9;
+            color: #3f6850;
+            font-size: 14px;
+            animation: fadeUp 0.5s 0.55s both;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 13px 25px;
+            border-radius: 10px;
+            background: #202124;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s ease,
+            box-shadow 0.2s ease;
+            animation: fadeUp 0.5s 0.65s both;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .footer {
+            margin-top: 24px;
+            color: #9a9da3;
+            font-size: 12px;
+            animation: fadeUp 0.5s 0.75s both;
+        }
+
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes iconEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.75);
+            }
+
+            70% {
+                transform: scale(1.05);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes drawCheck {
+            to {
+                transform: rotate(-45deg) scale(1);
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 42px 25px 36px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="brand">
+        Go<span>Movie</span>
+    </div>
+
+    <div class="icon-wrapper">
+        <div class="check"></div>
+    </div>
+
+    <h1>Payment Successful</h1>
+
+    <p class="message">
+        Your payment has been completed successfully
+        and your movie booking is confirmed.
+    </p>
+
+    <div class="confirmation">
+        Your tickets are ready. Enjoy the show.
+    </div>
+
+    <a href="/" class="button">
+        Back to GoMovie
+    </a>
+
+    <div class="footer">
+        Thank you for booking with GoMovie
+    </div>
+
+</div>
+
+</body>
+</html>
