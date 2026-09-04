@@ -6,7 +6,11 @@ public interface CityService {
 
     CityResponse create(CityRequest request);
 
-    CityResponse getById(Long id);
+    List<CityResponse> getAllActive();
 
-    List<CityResponse> getAll();
+    List<CityResponse> getAllForAdmin();
+
+    void deactivate(Long id);
+
+    void reactivate(Long id);
 }

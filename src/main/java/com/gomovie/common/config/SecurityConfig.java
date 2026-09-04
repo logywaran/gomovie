@@ -26,6 +26,10 @@ public class SecurityConfig {
             throws Exception {
 
         http
+
+                // ==========================
+                // Security Configuration
+                // ==========================
                 .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(session ->
@@ -34,36 +38,43 @@ public class SecurityConfig {
                         )
                 )
 
+                // ==========================
+                // Authorization
+                // ==========================
                 .authorizeHttpRequests(auth -> auth
 
-                        // ==========================
-                        // Authentication
-                        // ==========================
+                        // ---------- Public Authentication ----------
                         .requestMatchers(
                                 "/api/users/register",
                                 "/api/users/login"
                         )
                         .permitAll()
 
-                        // ==========================
-                        // Public APIs
-                        // ==========================
+                        // ---------- Public APIs ----------
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/cities",
-                                "/api/cities/**",
                                 "/api/movies/**",
                                 "/api/shows/**",
                                 "/api/theatres/**",
-                                "/api/screens/**",
+                                "/api/screens/**"
+                        )
+                        .permitAll()
+
+                        // ---------- API Documentation ----------
+                        .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         )
                         .permitAll()
 
-                        // ==========================
-                        // Theatre Management
-                        // ==========================
+                        // ---------- Admin APIs ----------
+                        .requestMatchers(
+                                "/api/admin/cities/**"
+                        )
+                        .hasRole("ADMIN")
+
+                        // ---------- Theatre Manager APIs ----------
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/theatres/*/screens"
@@ -76,59 +87,47 @@ public class SecurityConfig {
                         )
                         .hasRole("THEATRE_MANAGER")
 
-                        // ==========================
-                        // Admin APIs
-                        // ==========================
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/cities"
-                        )
-                        .hasRole("ADMIN")
-
-                        // ==========================
-                        // Customer APIs
-                        // ==========================
+                        // ---------- Customer APIs ----------
                         .requestMatchers(
                                 "/api/bookings/**"
                         )
                         .hasRole("CUSTOMER")
 
-                                // ==========================
-                                // Mobi Payment APIs
-                                // ==========================
-                                .requestMatchers(
-                                        "/api/payments/mobi/deposit",
-                                        "/api/payments/mobi/redirect"
-                                )
-                                .permitAll()
+                        // ---------- Mobi Payment APIs ----------
+                        .requestMatchers(
+                                "/api/payments/mobi/deposit",
+                                "/api/payments/mobi/redirect"
+                        )
+                        .permitAll()
 
-                                // ==========================
-                                // Public Payment Pages
-                                // ==========================
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/payment-success.html",
-                                        "/payment-failure.html"
-                                )
-                                .permitAll()
+                        // ---------- Payment Result Pages ----------
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/payment-success.html",
+                                "/payment-failure.html"
+                        )
+                        .permitAll()
 
-                                // ==========================
-                                // Everything else
-                                // ==========================
-                                .anyRequest()
-                                .authenticated()
+                        // ---------- All Other Requests ----------
+                        .anyRequest()
+                        .authenticated()
                 )
 
+                // ==========================
+                // Exception Handling
+                // ==========================
                 .exceptionHandling(exception -> exception
 
+                        // Unauthenticated request → 401
                         .authenticationEntryPoint(
                                 jwtAuthenticationEntryPoint
                         )
 
+                        // Authenticated but insufficient permission → 403
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
 
                             log.warn(
-                                    "Access denied for {} {}. User={}",
+                                    "Access denied: method={}, uri={}, user={}",
                                     request.getMethod(),
                                     request.getRequestURI(),
                                     request.getUserPrincipal() != null
@@ -143,6 +142,9 @@ public class SecurityConfig {
                         })
                 )
 
+                // ==========================
+                // JWT Authentication Filter
+                // ==========================
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CityRepository extends JpaRepository<City, Long> {
 
-    boolean existsByName(String name);
+    boolean existsByNameIgnoreCase(String name);
 
     List<City> findByIsActiveTrue();
 }

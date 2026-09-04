@@ -38,11 +38,11 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 900000
 
-# Logging
 logging:
   level:
     root: INFO
-    com.gomovie: TRACE
+    com.gomovie: INFO
+    com.gomovie.city: DEBUG
 
 mobi:
   fpx:
