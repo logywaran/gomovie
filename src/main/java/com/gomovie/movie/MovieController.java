@@ -1,10 +1,10 @@
 package com.gomovie.movie;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -13,15 +13,15 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    @PostMapping
-    public ResponseEntity<MovieResponse> createMovie(
-            @Valid @RequestBody MovieRequest request) {
+    @GetMapping
+    public ResponseEntity<List<MovieResponse>> getMovies(
+            @RequestParam(required = false) String certificate,
+            @RequestParam(required = false) String sort) {
 
-        MovieResponse response = movieService.createMovie(request);
+        List<MovieResponse> response =
+                movieService.getMovies(certificate, sort);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

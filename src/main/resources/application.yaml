@@ -43,6 +43,7 @@ logging:
     root: INFO
     com.gomovie: INFO
     com.gomovie.city: DEBUG
+    com.gomovie.movie: DEBUG
 
 mobi:
   fpx:

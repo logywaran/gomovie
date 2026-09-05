@@ -185,3 +185,51 @@ City deactivated successfully
 Reactivating city
 City reactivated successfully
 ```
+## 7. Testing Status
+
+The City module was tested through Swagger/OpenAPI.
+
+Verified scenarios include:
+
+* City creation
+* Duplicate city name rejection
+* Case-insensitive duplicate city name detection
+* Invalid city name validation
+* Public city listing
+* Admin city listing
+* Deactivation of an active city
+* Deactivated city hidden from the public API
+* Deactivated city still visible to administrators
+* Reactivation of an inactive city
+* Reactivated city becoming publicly visible
+* Repeated deactivation rejected
+* Repeated reactivation rejected
+
+The tested lifecycle is:
+
+```text
+Create
+  ↓
+ACTIVE
+  ↓
+Deactivate
+  ↓
+INACTIVE
+  ↓
+Reactivate
+  ↓
+ACTIVE
+```
+
+Invalid lifecycle transitions were also verified:
+
+```text
+ACTIVE + deactivate   → success
+INACTIVE + deactivate → 409 Conflict
+
+INACTIVE + reactivate → success
+ACTIVE + reactivate   → 409 Conflict
+```
+
+The City module is considered complete and frozen after successful API testing.
+

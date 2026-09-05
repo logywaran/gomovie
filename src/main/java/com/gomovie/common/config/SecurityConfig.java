@@ -70,7 +70,8 @@ public class SecurityConfig {
 
                         // ---------- Admin APIs ----------
                         .requestMatchers(
-                                "/api/admin/cities/**"
+                                "/api/admin/cities/**",
+                                "/api/admin/movies/**"
                         )
                         .hasRole("ADMIN")
 
