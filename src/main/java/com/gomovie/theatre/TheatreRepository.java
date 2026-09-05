@@ -6,13 +6,20 @@ import java.util.List;
 
 public interface TheatreRepository extends JpaRepository<Theatre, Long> {
 
-    boolean existsByCityIdAndName(Long cityId, String name);
+    boolean existsByCityIdAndNameIgnoreCase(
+            Long cityId,
+            String name
+    );
 
-    List<Theatre> findByCityIdAndIsActiveTrue(Long cityId);
+    List<Theatre> findByCityIdAndIsActiveTrue(
+            Long cityId
+    );
 
-    boolean existsByCityIdAndNameAndIdNot(
+    boolean existsByCityIdAndNameIgnoreCaseAndIdNot(
             Long cityId,
             String name,
             Long theatreId
     );
+
+    List<Theatre> findByManagerId(Long managerId);
 }

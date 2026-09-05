@@ -10,5 +10,29 @@ public interface TheatreService {
 
     TheatreResponse getById(Long theatreId);
 
-    TheatreResponse update(Long theatreId, TheatreUpdateRequest request);
+    TheatreResponse updateForAdmin(
+            Long theatreId,
+            TheatreUpdateRequest request
+    );
+
+    List<TheatreResponse> getAllForAdmin();
+
+    TheatreResponse getByIdForAdmin(Long theatreId);
+
+    List<TheatreResponse> getAllForManager(Long managerId);
+
+    TheatreResponse getByIdForManager(
+            Long theatreId,
+            Long managerId
+    );
+
+    TheatreResponse updateForManager(
+            Long theatreId,
+            TheatreUpdateRequest request,
+            Long managerId
+    );
+
+    void deactivate(Long theatreId);
+
+    void reactivate(Long theatreId);
 }

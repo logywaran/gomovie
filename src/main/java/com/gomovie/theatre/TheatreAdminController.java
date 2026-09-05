@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/theatres")
+@RequestMapping("/api/admin/theatres")
 @RequiredArgsConstructor
-public class TheatreController {
+public class TheatreAdminController {
 
     private final TheatreService theatreService;
 
@@ -19,31 +19,33 @@ public class TheatreController {
     public ResponseEntity<TheatreResponse> create(
             @Valid @RequestBody TheatreRequest request) {
 
-        TheatreResponse response = theatreService.create(request);
+        TheatreResponse response =
+                theatreService.create(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<TheatreResponse>> getAll() {
+
+        List<TheatreResponse> theatres =
+                theatreService.getAllForAdmin();
+
+        return ResponseEntity.ok(theatres);
+    }
+
     @GetMapping("/{theatreId}")
     public ResponseEntity<TheatreResponse> getById(
             @PathVariable Long theatreId) {
 
-        TheatreResponse response = theatreService.getById(theatreId);
+        TheatreResponse response =
+                theatreService.getByIdForAdmin(theatreId);
 
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TheatreResponse>> getByCity(
-            @RequestParam Long cityId) {
-
-        List<TheatreResponse> theatres =
-                theatreService.getByCity(cityId);
-
-        return ResponseEntity.ok(theatres);
-    }
 
     @PatchMapping("/{theatreId}")
     public ResponseEntity<TheatreResponse> update(
@@ -51,8 +53,28 @@ public class TheatreController {
             @Valid @RequestBody TheatreUpdateRequest request) {
 
         TheatreResponse response =
-                theatreService.update(theatreId, request);
+                theatreService.updateForAdmin(theatreId, request);
 
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{theatreId}/deactivate")
+    public ResponseEntity<Void> deactivate(
+            @PathVariable Long theatreId) {
+
+        theatreService.deactivate(theatreId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{theatreId}/reactivate")
+    public ResponseEntity<Void> reactivate(
+            @PathVariable Long theatreId) {
+
+        theatreService.reactivate(theatreId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

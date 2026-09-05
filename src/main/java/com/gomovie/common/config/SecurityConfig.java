@@ -61,21 +61,29 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // ---------- API Documentation ----------
+                        // ---------- API Documentation & Error Handling ----------
                         .requestMatchers(
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         )
                         .permitAll()
 
                         // ---------- Admin APIs ----------
                         .requestMatchers(
                                 "/api/admin/cities/**",
-                                "/api/admin/movies/**"
+                                "/api/admin/movies/**",
+                                "/api/admin/theatres/**"
                         )
                         .hasRole("ADMIN")
 
                         // ---------- Theatre Manager APIs ----------
+                        .requestMatchers(
+                                "/api/manager/theatres/**"
+                        )
+                        .hasRole("THEATRE_MANAGER")
+
+                        // ---------- Screen & Seat Management ----------
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/theatres/*/screens"

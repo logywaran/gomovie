@@ -2,6 +2,7 @@ package com.gomovie.theatre;
 
 import com.gomovie.city.City;
 import com.gomovie.common.entity.BaseEntity;
+import com.gomovie.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
         name = "theatre",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_theatre_city_name",
-                columnNames = {"city_id", "name"}// Coimbatore+Inox✅ Chennai+Inox✅
+                columnNames = {"city_id", "name"}
         )
 )
 @Getter
@@ -29,6 +30,10 @@ public class Theatre extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "manager_id", nullable = false)
+    private User manager;
 
     @Column(nullable = false, length = 150)
     private String name;

@@ -9,6 +9,9 @@ public record TheatreRequest(
         @NotNull(message = "City ID is required")
         Long cityId,
 
+        @NotNull(message = "Manager ID is required")
+        Long managerId,
+
         @NotBlank(message = "Theatre name is required")
         @Size(max = 150, message = "Theatre name must not exceed 150 characters")
         String name,

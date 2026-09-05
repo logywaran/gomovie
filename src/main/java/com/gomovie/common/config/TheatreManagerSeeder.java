@@ -20,26 +20,40 @@ public class TheatreManagerSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if (userRepository.existsByRole(Role.THEATRE_MANAGER)) {
-            log.info("Theatre manager user already exists. Skipping theatre manager creation.");
-            return;
+        if (!userRepository.existsByRole(Role.THEATRE_MANAGER)) {
+
+            User theatreManager = new User();
+
+            theatreManager.setName("GoMovie Theatre Manager");
+            theatreManager.setEmail("manager@gomovie.com");
+
+            theatreManager.setPassword(
+                    passwordEncoder.encode("Manager@12345")
+            );
+
+            theatreManager.setRole(Role.THEATRE_MANAGER);
+
+            userRepository.save(theatreManager);
+
+            log.info("Initial theatre manager user created successfully.");
         }
 
-        User theatreManager = new User();
+        if (userRepository.findByEmail("manager2@gomovie.com").isEmpty()) {
 
-        theatreManager.setName("GoMovie Theatre Manager");
-        theatreManager.setEmail("manager@gomovie.com");
+            User theatreManager2 = new User();
 
-        // Temporary development credentials.
-        // Never log the raw password.
-        theatreManager.setPassword(
-                passwordEncoder.encode("Manager@12345")
-        );
+            theatreManager2.setName("GoMovie Theatre Manager 2");
+            theatreManager2.setEmail("manager2@gomovie.com");
 
-        theatreManager.setRole(Role.THEATRE_MANAGER);
+            theatreManager2.setPassword(
+                    passwordEncoder.encode("Manager2@12345")
+            );
 
-        userRepository.save(theatreManager);
+            theatreManager2.setRole(Role.THEATRE_MANAGER);
 
-        log.info("Initial theatre manager user created successfully.");
+            userRepository.save(theatreManager2);
+
+            log.info("Second theatre manager user created successfully.");
+        }
     }
 }
