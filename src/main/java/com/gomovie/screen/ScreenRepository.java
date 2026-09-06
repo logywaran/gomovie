@@ -6,7 +6,16 @@ import java.util.List;
 
 public interface ScreenRepository extends JpaRepository<Screen, Long> {
 
-    boolean existsByTheatreIdAndName(Long theatreId, String name);
+    boolean existsByTheatreIdAndNameIgnoreCase(
+            Long theatreId,
+            String name
+    );
 
-    List<Screen> findAllByTheatreIdAndIsActiveTrue(Long theatreId);
+    boolean existsByTheatreIdAndNameIgnoreCaseAndIdNot(
+            Long theatreId,
+            String name,
+            Long screenId
+    );
+
+    List<Screen> findAllByTheatreId(Long theatreId);
 }

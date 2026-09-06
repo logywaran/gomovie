@@ -56,10 +56,23 @@ public class SecurityConfig {
                                 "/api/cities",
                                 "/api/movies/**",
                                 "/api/shows/**",
-                                "/api/theatres/**",
-                                "/api/screens/**"
+                                "/api/theatres",
+                                "/api/theatres/*"
                         )
                         .permitAll()
+
+                        // ---------- Screen & Seat Management ----------
+                        .requestMatchers(
+                                "/api/theatres/*/screens",
+                                "/api/screens/**"
+                        )
+                        .hasRole("THEATRE_MANAGER")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/screens/*/seats"
+                        )
+                        .hasRole("THEATRE_MANAGER")
 
                         // ---------- API Documentation & Error Handling ----------
                         .requestMatchers(
@@ -80,19 +93,6 @@ public class SecurityConfig {
                         // ---------- Theatre Manager APIs ----------
                         .requestMatchers(
                                 "/api/manager/theatres/**"
-                        )
-                        .hasRole("THEATRE_MANAGER")
-
-                        // ---------- Screen & Seat Management ----------
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/theatres/*/screens"
-                        )
-                        .hasRole("THEATRE_MANAGER")
-
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/screens/*/seats"
                         )
                         .hasRole("THEATRE_MANAGER")
 
