@@ -10,6 +10,7 @@ public record SeatRequest(
 
         @Min(value = 1, message = "Seat number must be at least 1")
         @Max(value = 999, message = "Seat number must not exceed 999")
+        @NotNull(message = "Seat number is required")
         Integer seatNumber,
 
         @NotNull(message = "Seat type is required")

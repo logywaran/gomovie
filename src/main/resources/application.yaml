@@ -46,6 +46,8 @@ logging:
     com.gomovie.city: DEBUG
     com.gomovie.movie: DEBUG
     com.gomovie.theatre: DEBUG
+    com.gomovie.screen: DEBUG
+    com.gomovie.seat: DEBUG
 
 mobi:
   fpx:

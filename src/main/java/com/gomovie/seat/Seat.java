@@ -21,13 +21,13 @@ import java.time.LocalDateTime;
                                 "seat_number"
                         }
                 ),
-                @UniqueConstraint(
-                        name = "uk_seat_id_screen",
-                        columnNames = {
-                                "id",
-                                "screen_id"
-                        }
-                )
+//                @UniqueConstraint(
+//                        name = "uk_seat_id_screen",
+//                        columnNames = {
+//                                "id",
+//                                "screen_id"
+//                        }
+//                )
         }
 )
 @Getter

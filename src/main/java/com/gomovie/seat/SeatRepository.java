@@ -13,7 +13,5 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     );
 
 
-    List<Seat> findAllByScreenIdAndIsActiveTrue(Long screenId);
-
     List<Seat> findByScreenId(Long screenId);
 }
