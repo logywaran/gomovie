@@ -22,7 +22,10 @@ public record MovieShowRequest(
         LocalTime startTime,
 
         @NotNull(message = "End time is required")
-        LocalTime endTime
+        LocalTime endTime,
+
+        @NotNull(message = "Language is required")
+        MovieLanguage language
 
 ) {
 }

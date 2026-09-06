@@ -17,6 +17,8 @@ public record MovieShowResponse(
 
         LocalTime endTime,
 
+        MovieLanguage language,
+
         Boolean isActive
 
 ) {

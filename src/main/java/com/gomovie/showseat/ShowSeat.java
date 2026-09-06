@@ -13,16 +13,18 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(
-        name = "show_seat",
+        name = "show_seat"
+        ,
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_show_seat",
                         columnNames = {"show_id", "seat_id"}
-                ),
-                @UniqueConstraint(
-                        name = "uk_show_seat_id_show",
-                        columnNames = {"id", "show_id"}
                 )
+//                ,
+//                @UniqueConstraint(
+//                        name = "uk_show_seat_id_show",
+//                        columnNames = {"id", "show_id"}
+//                )
         }
 )
 @Getter

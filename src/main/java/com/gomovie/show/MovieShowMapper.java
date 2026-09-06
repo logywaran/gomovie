@@ -16,6 +16,7 @@ public class MovieShowMapper {
                 movieShow.getShowDate(),
                 movieShow.getStartTime(),
                 movieShow.getEndTime(),
+                movieShow.getLanguage(),
                 movieShow.getIsActive()
         );
     }
@@ -32,21 +33,11 @@ public class MovieShowMapper {
         movieShow.setShowDate(request.showDate());
         movieShow.setStartTime(request.startTime());
         movieShow.setEndTime(request.endTime());
+        movieShow.setLanguage(request.language());
         movieShow.setIsActive(true);
 
         return movieShow;
     }
 
-    public void updateEntity(
-            MovieShow movieShow,
-            MovieShowRequest request,
-            Movie movie,
-            Screen screen) {
 
-        movieShow.setMovie(movie);
-        movieShow.setScreen(screen);
-        movieShow.setShowDate(request.showDate());
-        movieShow.setStartTime(request.startTime());
-        movieShow.setEndTime(request.endTime());
-    }
 }

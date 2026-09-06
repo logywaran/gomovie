@@ -12,18 +12,19 @@ import java.time.LocalTime;
 
 @Entity
 @Table(
-        name = "movie_show",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_movie_show_id_screen",
-                        columnNames = {"id", "screen_id"}
-                )
-        }
+        name = "movie_show"
+//        ,
+//        uniqueConstraints = {
+//                @UniqueConstraint(
+//                        name = "uk_movie_show_id_screen",
+//                        columnNames = {"id", "screen_id"}
+//                )
+//        }
 )
 @Getter
 @Setter
 @NoArgsConstructor
-public class MovieShow {
+public class MovieShow {// 1 movie --* movie show *-- 1 Screen can host many shows
 
     //Movie + screen + data + time = MovieShow
     @Id
@@ -46,6 +47,10 @@ public class MovieShow {
 
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private MovieLanguage language;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

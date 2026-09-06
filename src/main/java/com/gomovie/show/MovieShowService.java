@@ -5,17 +5,26 @@ import java.util.List;
 public interface MovieShowService {
 
     MovieShowResponse createShow(
-            MovieShowRequest request
+            MovieShowRequest request,
+            Long managerId
     );
 
     MovieShowResponse getShowById(Long id);
 
     List<MovieShowResponse> getAllShows();
 
-    MovieShowResponse updateShow(
-            Long id,
-            MovieShowRequest request
+    List<MovieShowResponse> getShowsForCustomer(
+            Long movieId,
+            Long theatreId
     );
 
-    MovieShowResponse deactivateShow(Long id);
+    MovieShowResponse deactivateShow(
+            Long id,
+            Long managerId
+    );
+
+    MovieShowResponse reactivateShow(
+            Long id,
+            Long managerId
+    );
 }

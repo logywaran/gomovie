@@ -24,6 +24,7 @@ public class ShowSeatServiceImpl implements ShowSeatService {
     @Override
     public List<ShowSeatResponse> generateShowSeats(Long showId) {
 
+        // A ShowSeat can only be generated for an existing show.
         MovieShow movieShow =
                 movieShowRepository.findById(showId)
                         .orElseThrow(() ->
@@ -32,21 +33,23 @@ public class ShowSeatServiceImpl implements ShowSeatService {
                                 )
                         );
 
+        // Only active physical seats of the show's screen
+        // should become bookable inventory.
         List<Seat> seats =
-                seatRepository.findByScreenId(
+                seatRepository.findByScreenIdAndIsActiveTrue(
                         movieShow.getScreen().getId()
                 );
 
         if (seats.isEmpty()) {
-
             throw new ResourceNotFoundException(
                     "No seats found for screen: "
                             + movieShow.getScreen().getId()
             );
         }
 
+        // Prevent generating duplicate ShowSeat records
+        // for the same show.
         if (showSeatRepository.existsByShowId(showId)) {
-
             throw new ResourceAlreadyExistsException(
                     "Show seats already exist for show: " + showId
             );
@@ -68,10 +71,13 @@ public class ShowSeatServiceImpl implements ShowSeatService {
                             showSeat.setScreen(movieShow.getScreen());
                             showSeat.setSeat(seat);
 
+                            // Every newly generated seat starts
+                            // as available for booking.
                             showSeat.setStatus(
                                     ShowSeatStatus.AVAILABLE
                             );
 
+                            // Current MVP uses a fixed seat price.
                             showSeat.setPrice(
                                     BigDecimal.valueOf(200)
                             );
@@ -91,8 +97,16 @@ public class ShowSeatServiceImpl implements ShowSeatService {
     @Override
     public List<ShowSeatResponse> getShowSeats(Long showId) {
 
-        if (!movieShowRepository.existsById(showId)) {
+        MovieShow movieShow =
+                movieShowRepository.findById(showId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Show not found with id: " + showId
+                                )
+                        );
 
+        // Customers should only see seats for active shows.
+        if (!movieShow.getIsActive()) {
             throw new ResourceNotFoundException(
                     "Show not found with id: " + showId
             );

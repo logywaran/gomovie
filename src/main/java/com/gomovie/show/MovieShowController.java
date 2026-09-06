@@ -1,9 +1,12 @@
 package com.gomovie.show;
 
+import com.gomovie.user.User;
+import com.gomovie.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,13 +17,22 @@ import java.util.List;
 public class MovieShowController {
 
     private final MovieShowService movieShowService;
+    private final UserRepository userRepository;
 
     @PostMapping
     public ResponseEntity<MovieShowResponse> createShow(
-            @Valid @RequestBody MovieShowRequest request) {
+            @Valid @RequestBody MovieShowRequest request,
+            Authentication authentication) {
+
+        User manager = userRepository.findByEmail(
+                authentication.getName()
+        ).orElseThrow();
 
         MovieShowResponse response =
-                movieShowService.createShow(request);
+                movieShowService.createShow(
+                        request,
+                        manager.getId()
+                );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -46,23 +58,53 @@ public class MovieShowController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MovieShowResponse> updateShow(
-            @PathVariable Long id,
-            @Valid @RequestBody MovieShowRequest request) {
+    @GetMapping("/movie/{movieId}/theatre/{theatreId}")
+    public ResponseEntity<List<MovieShowResponse>> getShowsForCustomer(
+            @PathVariable Long movieId,
+            @PathVariable Long theatreId) {
 
-        MovieShowResponse response =
-                movieShowService.updateShow(id, request);
+        List<MovieShowResponse> response =
+                movieShowService.getShowsForCustomer(
+                        movieId,
+                        theatreId
+                );
 
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
+
+    @PatchMapping("/{id}/deactivate")
     public ResponseEntity<MovieShowResponse> deactivateShow(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        User manager = userRepository.findByEmail(
+                authentication.getName()
+        ).orElseThrow();
 
         MovieShowResponse response =
-                movieShowService.deactivateShow(id);
+                movieShowService.deactivateShow(
+                        id,
+                        manager.getId()
+                );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<MovieShowResponse> reactivateShow(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        User manager = userRepository.findByEmail(
+                authentication.getName()
+        ).orElseThrow();
+
+        MovieShowResponse response =
+                movieShowService.reactivateShow(
+                        id,
+                        manager.getId()
+                );
 
         return ResponseEntity.ok(response);
     }

@@ -74,6 +74,13 @@ public class SecurityConfig {
                         )
                         .hasRole("THEATRE_MANAGER")
 
+                        // ---------- ShowSeat Customer API ----------
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/show-seats/**"
+                        )
+                        .hasRole("CUSTOMER")
+
                         // ---------- API Documentation & Error Handling ----------
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -116,6 +123,19 @@ public class SecurityConfig {
                                 "/payment-failure.html"
                         )
                         .permitAll()
+
+                        // ---------- Show Management ----------
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/shows"
+                        )
+                        .hasRole("THEATRE_MANAGER")
+
+                        .requestMatchers(
+                                "/api/shows/*/deactivate",
+                                "/api/shows/*/reactivate"
+                        )
+                        .hasRole("THEATRE_MANAGER")
 
                         // ---------- All Other Requests ----------
                         .anyRequest()
