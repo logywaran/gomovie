@@ -51,11 +51,13 @@ public interface MovieShowRepository
     WHERE ms.movie.id = :movieId
       AND ms.screen.theatre.id = :theatreId
       AND ms.isActive = true
+      AND ms.showDate >= :today
     ORDER BY ms.showDate, ms.startTime
     """)
     List<MovieShow> findActiveShowsForCustomer(
             @Param("movieId") Long movieId,
-            @Param("theatreId") Long theatreId
+            @Param("theatreId") Long theatreId,
+            @Param("today") LocalDate today
     );
 }
 

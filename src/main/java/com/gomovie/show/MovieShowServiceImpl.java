@@ -213,7 +213,8 @@ public class MovieShowServiceImpl implements MovieShowService {
         return movieShowRepository
                 .findActiveShowsForCustomer(
                         movieId,
-                        theatreId
+                        theatreId,
+                        LocalDate.now()
                 )
                 .stream()
                 .map(movieShowMapper::toResponse)

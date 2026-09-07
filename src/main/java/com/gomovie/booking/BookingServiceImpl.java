@@ -2,6 +2,7 @@ package com.gomovie.booking;
 
 import com.gomovie.bookingseat.BookingSeat;
 import com.gomovie.bookingseat.BookingSeatRepository;
+import com.gomovie.common.exception.InvalidStateException;
 import com.gomovie.common.exception.ResourceAlreadyExistsException;
 import com.gomovie.common.exception.ResourceNotFoundException;
 import com.gomovie.show.MovieShow;
@@ -50,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
 
         if (!show.getIsActive()) {
 
-            throw new ResourceAlreadyExistsException(
+            throw new InvalidStateException(
                     "Show is not active"
             );
         }
