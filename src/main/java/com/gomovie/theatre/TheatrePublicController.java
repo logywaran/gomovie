@@ -23,6 +23,20 @@ public class TheatrePublicController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/city/{cityId}/movie/{movieId}")
+    public ResponseEntity<List<TheatreResponse>> getByMovieAndCity(
+            @PathVariable Long cityId,
+            @PathVariable Long movieId) {
+
+        List<TheatreResponse> theatres =
+                theatreService.getByMovieAndCity(
+                        movieId,
+                        cityId
+                );
+
+        return ResponseEntity.ok(theatres);
+    }
+
     @GetMapping
     public ResponseEntity<List<TheatreResponse>> getByCity(
             @RequestParam Long cityId) {

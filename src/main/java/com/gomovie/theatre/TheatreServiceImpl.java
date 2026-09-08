@@ -5,6 +5,7 @@ import com.gomovie.city.CityRepository;
 import com.gomovie.common.exception.InvalidStateException;
 import com.gomovie.common.exception.ResourceAlreadyExistsException;
 import com.gomovie.common.exception.ResourceNotFoundException;
+import com.gomovie.show.MovieShowRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import com.gomovie.user.Role;
@@ -26,6 +27,7 @@ public class TheatreServiceImpl implements TheatreService {
     private final CityRepository cityRepository;
     private final TheatreMapper theatreMapper;
     private final UserRepository userRepository;
+    private final MovieShowRepository movieShowRepository;
 
     @Override
     public TheatreResponse create(TheatreRequest request) {
@@ -178,6 +180,37 @@ public class TheatreServiceImpl implements TheatreService {
         log.debug(
                 "Found {} active theatres for cityId={}",
                 theatres.size(),
+                cityId
+        );
+
+        return theatres.stream()
+                .map(theatreMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TheatreResponse> getByMovieAndCity(
+            Long movieId,
+            Long cityId
+    ) {
+
+        log.debug(
+                "Fetching theatres for movieId={} in cityId={}",
+                movieId,
+                cityId
+        );
+
+        List<Theatre> theatres =
+                movieShowRepository.findActiveTheatresByMovieAndCity(
+                        movieId,
+                        cityId
+                );
+
+        log.debug(
+                "Found {} theatres for movieId={} in cityId={}",
+                theatres.size(),
+                movieId,
                 cityId
         );
 

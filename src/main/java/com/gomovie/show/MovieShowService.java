@@ -1,5 +1,6 @@
 package com.gomovie.show;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MovieShowService {
@@ -15,7 +16,8 @@ public interface MovieShowService {
 
     List<MovieShowResponse> getShowsForCustomer(
             Long movieId,
-            Long theatreId
+            Long theatreId,
+            LocalDate showDate
     );
 
     MovieShowResponse deactivateShow(

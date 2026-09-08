@@ -1,5 +1,7 @@
 package com.gomovie.show;
 
+import com.gomovie.movie.Movie;
+import com.gomovie.theatre.Theatre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,14 +52,38 @@ public interface MovieShowRepository
     FROM MovieShow ms
     WHERE ms.movie.id = :movieId
       AND ms.screen.theatre.id = :theatreId
+      AND ms.showDate = :showDate
       AND ms.isActive = true
-      AND ms.showDate >= :today
-    ORDER BY ms.showDate, ms.startTime
+    ORDER BY ms.startTime
     """)
     List<MovieShow> findActiveShowsForCustomer(
             @Param("movieId") Long movieId,
             @Param("theatreId") Long theatreId,
-            @Param("today") LocalDate today
+            @Param("showDate") LocalDate showDate
+    );
+
+    @Query("""
+        SELECT DISTINCT ms.movie
+        FROM MovieShow ms
+        WHERE ms.screen.theatre.city.id = :cityId
+          AND ms.isActive = true
+          AND ms.movie.isActive = true
+        """)
+    List<Movie> findActiveMoviesByCity(
+            @Param("cityId") Long cityId
+    );
+
+    @Query("""
+    SELECT DISTINCT ms.screen.theatre
+    FROM MovieShow ms
+    WHERE ms.movie.id = :movieId
+      AND ms.screen.theatre.city.id = :cityId
+      AND ms.isActive = true
+      AND ms.movie.isActive = true
+      AND ms.screen.theatre.isActive = true
+    """)
+    List<Theatre> findActiveTheatresByMovieAndCity(
+            @Param("movieId") Long movieId,
+            @Param("cityId") Long cityId
     );
 }
-

@@ -1,5 +1,6 @@
 package com.gomovie.booking;
 
+import com.gomovie.bookingseat.BookingSeat;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -19,4 +20,5 @@ public interface BookingRepository
     );
 
     List<Booking> findByUserId(Long userId);
+
 }

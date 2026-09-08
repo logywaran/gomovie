@@ -3,6 +3,7 @@ package com.gomovie.movie;
 import com.gomovie.common.exception.InvalidStateException;
 import com.gomovie.common.exception.ResourceAlreadyExistsException;
 import com.gomovie.common.exception.ResourceNotFoundException;
+import com.gomovie.show.MovieShowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
+    private final MovieShowRepository movieShowRepository;
 
     // Create a new movie.
     @Override
@@ -92,6 +94,18 @@ public class MovieServiceImpl implements MovieService {
 
         // Convert the entity into the response DTO.
         return movieMapper.toResponse(movie);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MovieResponse> getMoviesByCity(Long cityId) {
+
+        List<Movie> movies =
+                movieShowRepository.findActiveMoviesByCity(cityId);
+
+        return movies.stream()
+                .map(movieMapper::toResponse)
+                .toList();
     }
 
     // Update the details of an existing movie.

@@ -11,15 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "booking_seat",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_booking_seat_id_show",
-                        columnNames = {"id", "show_id"}
-                )
-        }
-)
+@Table(name = "booking_seat")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,44 +31,22 @@ public class BookingSeat {
     private Long showSeatId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumns({
-            @JoinColumn(
-                    name = "booking_id",
-                    referencedColumnName = "id",
-                    insertable = false,
-                    updatable = false
-            ),
-            @JoinColumn(
-                    name = "show_id",
-                    referencedColumnName = "show_id",
-                    insertable = false,
-                    updatable = false
-            )
-    })
+    @JoinColumn(
+            name = "booking_id",
+            insertable = false,
+            updatable = false
+    )
     private Booking booking;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumns({
-            @JoinColumn(
-                    name = "show_seat_id",
-                    referencedColumnName = "id",
-                    insertable = false,
-                    updatable = false
-            ),
-            @JoinColumn(
-                    name = "show_id",
-                    referencedColumnName = "show_id",
-                    insertable = false,
-                    updatable = false
-            )
-    })
+    @JoinColumn(
+            name = "show_seat_id",
+            insertable = false,
+            updatable = false
+    )
     private ShowSeat showSeat;
 
-    @Column(
-            nullable = false,
-            precision = 10,
-            scale = 2
-    )
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(

@@ -8,6 +8,8 @@ public interface MovieService {
 
     List<MovieResponse> getMovies(String certificate, String sort);
 
+    List<MovieResponse> getMoviesByCity(Long cityId);
+
     MovieResponse getMovieById(Long id);
 
     MovieResponse updateMovie(Long id, MovieUpdateRequest request);
@@ -17,4 +19,6 @@ public interface MovieService {
     MovieResponse reactivateMovie(Long id);
 
     List<MovieResponse> getAllMoviesForAdmin();
+
+
 }

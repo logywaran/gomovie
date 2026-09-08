@@ -12,19 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "booking",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_booking_reference",
-                        columnNames = "booking_reference"
-                ),
-                @UniqueConstraint(
-                        name = "uk_booking_id_show",
-                        columnNames = {"id", "show_id"}
-                )
-        }
-)
+@Table(name = "booking")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -43,10 +31,7 @@ public class Booking extends BaseEntity {
     private String bookingReference;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "show_id", nullable = false)
@@ -61,10 +46,7 @@ public class Booking extends BaseEntity {
     private MovieShow show;
 
     @Enumerated(EnumType.STRING)
-    @Column(
-            nullable = false,
-            length = 20
-    )
+    @Column(nullable = false, length = 20)
     private BookingStatus status;
 
     @Column(

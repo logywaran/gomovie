@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -61,12 +62,14 @@ public class MovieShowController {
     @GetMapping("/movie/{movieId}/theatre/{theatreId}")
     public ResponseEntity<List<MovieShowResponse>> getShowsForCustomer(
             @PathVariable Long movieId,
-            @PathVariable Long theatreId) {
+            @PathVariable Long theatreId,
+            @RequestParam LocalDate date) {
 
         List<MovieShowResponse> response =
                 movieShowService.getShowsForCustomer(
                         movieId,
-                        theatreId
+                        theatreId,
+                        date
                 );
 
         return ResponseEntity.ok(response);

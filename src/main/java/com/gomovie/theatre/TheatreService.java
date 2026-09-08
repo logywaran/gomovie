@@ -26,6 +26,11 @@ public interface TheatreService {
             Long managerId
     );
 
+    List<TheatreResponse> getByMovieAndCity(
+            Long movieId,
+            Long cityId
+    );
+
     TheatreResponse updateForManager(
             Long theatreId,
             TheatreUpdateRequest request,

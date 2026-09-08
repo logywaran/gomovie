@@ -2,9 +2,7 @@ package com.gomovie.booking;
 
 import com.gomovie.bookingseat.BookingSeat;
 import com.gomovie.bookingseat.BookingSeatRepository;
-import com.gomovie.common.exception.InvalidStateException;
-import com.gomovie.common.exception.ResourceAlreadyExistsException;
-import com.gomovie.common.exception.ResourceNotFoundException;
+import com.gomovie.common.exception.*;
 import com.gomovie.show.MovieShow;
 import com.gomovie.show.MovieShowRepository;
 import com.gomovie.showseat.ShowSeat;
@@ -19,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,38 +35,33 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse createBooking(
-            BookingRequest request) {
+    public BookingResponse createBooking(BookingRequest request) {
 
-        MovieShow show =
-                movieShowRepository.findById(request.showId())
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Show not found with id: "
-                                                + request.showId()
-                                )
-                        );
+        Set<Long> uniqueSeatIds =
+                new HashSet<>(request.showSeatIds());
 
-        if (!show.getIsActive()) {
-
-            throw new InvalidStateException(
-                    "Show is not active"
+        if (uniqueSeatIds.size() != request.showSeatIds().size()) {
+            throw new InvalidRequestException(
+                    "Duplicate seat IDs are not allowed"
             );
         }
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        MovieShow show = movieShowRepository.findById(request.showId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Show not found with id: " + request.showId()));
 
-        User user =
-                userRepository.findByEmail(email)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Authenticated user not found"
-                                )
-                        );
+        if (!show.getIsActive()) {
+            throw new InvalidStateException("Show is not active");
+        }
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Authenticated user not found"));
 
         List<ShowSeat> showSeats =
                 showSeatRepository.findAllByIdForUpdate(
@@ -76,7 +69,6 @@ public class BookingServiceImpl implements BookingService {
                 );
 
         if (showSeats.size() != request.showSeatIds().size()) {
-
             throw new ResourceNotFoundException(
                     "One or more selected seats were not found"
             );
@@ -85,14 +77,12 @@ public class BookingServiceImpl implements BookingService {
         for (ShowSeat showSeat : showSeats) {
 
             if (!showSeat.getShowId().equals(show.getId())) {
-
                 throw new ResourceAlreadyExistsException(
                         "Selected seat does not belong to the requested show"
                 );
             }
 
             if (showSeat.getStatus() != ShowSeatStatus.AVAILABLE) {
-
                 throw new ResourceAlreadyExistsException(
                         "One or more selected seats are not available"
                 );
@@ -109,8 +99,9 @@ public class BookingServiceImpl implements BookingService {
 
             showSeat.setStatus(ShowSeatStatus.HELD);
 
-            totalAmount =
-                    totalAmount.add(showSeat.getPrice());
+            totalAmount = totalAmount.add(
+                    showSeat.getPrice()
+            );
         }
 
         showSeatRepository.saveAll(showSeats);
@@ -118,11 +109,12 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
 
         booking.setBookingReference(
-                "GM-" + UUID.randomUUID()
-                        .toString()
-                        .replace("-", "")
-                        .substring(0, 12)
-                        .toUpperCase()
+                "GM-" +
+                        UUID.randomUUID()
+                                .toString()
+                                .replace("-", "")
+                                .substring(0, 12)
+                                .toUpperCase()
         );
 
         booking.setUser(user);
@@ -186,56 +178,75 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id) {
 
-        Booking booking =
-                bookingRepository.findById(id)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Booking not found with id: "
-                                                + id
-                                )
-                        );
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Booking not found with id: " + id
+                ));
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Authenticated user not found"
+                ));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException(
+                    "You are not allowed to access this booking"
+            );
+        }
 
         List<BookingSeat> bookingSeats =
                 bookingSeatRepository.findByBookingId(id);
 
-        return bookingMapper.toResponse(
-                booking,
-                bookingSeats
-        );
+        return bookingMapper.toResponse(booking, bookingSeats);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings() {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
 
-        User user =
-                userRepository.findByEmail(email)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Authenticated user not found"
-                                )
-                        );
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Authenticated user not found"
+                        )
+                );
 
         List<Booking> bookings =
                 bookingRepository.findByUserId(user.getId());
 
+        List<Long> bookingIds = bookings.stream()
+                .map(Booking::getId)
+                .toList();
+
+        List<BookingSeat> bookingSeats =
+                bookingSeatRepository.findByBookingIdIn(bookingIds);
+
+        Map<Long, List<BookingSeat>> seatsByBookingId =
+                bookingSeats.stream()
+                        .collect(Collectors.groupingBy(
+                                BookingSeat::getBookingId
+                        ));
+
         return bookings.stream()
                 .map(booking -> {
 
-                    List<BookingSeat> bookingSeats =
-                            bookingSeatRepository.findByBookingId(
-                                    booking.getId()
+                    List<BookingSeat> seats =
+                            seatsByBookingId.getOrDefault(
+                                    booking.getId(),
+                                    List.of()
                             );
 
                     return bookingMapper.toResponse(
                             booking,
-                            bookingSeats
+                            seats
                     );
                 })
                 .toList();

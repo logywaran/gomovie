@@ -198,28 +198,32 @@ public class MovieShowServiceImpl implements MovieShowService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovieShowResponse> getShowsForCustomer(
             Long movieId,
-            Long theatreId) {
+            Long theatreId,
+            LocalDate showDate) {
 
         /*
          * Customer browsing is based on:
          *
-         * Movie + Theatre + Date
+         * Movie + Theatre + Selected Date
          *
-         * The repository returns only active shows and
-         * orders them by start time.
+         * The repository returns only active shows
+         * for that exact date and orders them by start time.
          */
         return movieShowRepository
                 .findActiveShowsForCustomer(
                         movieId,
                         theatreId,
-                        LocalDate.now()
+                        showDate
                 )
                 .stream()
                 .map(movieShowMapper::toResponse)
                 .toList();
     }
+
+
 
     @Override
     public MovieShowResponse deactivateShow(
@@ -233,6 +237,7 @@ public class MovieShowServiceImpl implements MovieShowService {
                                         "Show not found with id: " + id
                                 )
                         );
+
 
         /*
          * SecurityConfig checks the manager's role.
